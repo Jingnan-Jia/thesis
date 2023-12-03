@@ -1,0 +1,33 @@
+\graphicspath{{Introduction/figures/}}
+\chapter{Introduction}\label{ch:intro}
+%\thispagestyle{empty}
+
+\runningchaptertitle{Introduction}
+%\bstctlcite{IEEE:BSTcontrol}
+%% Use this code to put your background image
+%\ThisCenterWallPaper{\wpScaling}{ChapterBackground.png}
+%\noabstract
+\ThumbIndexShow
+
+\newcommand{\tb}{\textit{{\textbf{}}}}
+
+
+
+\section{Pulmonary anatomy and respiratory physiology}
+
+The aim of this thesis is to develop these methods focusing on quantifying pulmonary vascular diseases and assessing treatment effects, based on CT images. Particularly, the following objectives have been pursued in this thesis: 1) to develop an accurate lung vessel segmentation method; 2) to propose and validate an automatic method for quantifying pulmonary vascular morphology; 3) to investigate pulmonary vascular remodeling in SSc patients with impaired DLCO, but in the absence of pulmonary fibrosis; 4) to investigate changes in the pulmonary vascular densitometry and morphology in patients with CTEPH, treated with BPA. These objectives are described in this thesis, with the following structure:
+
+%\begin{description}[align=left]
+\textbf{Chapter 2} presents a method for extracting lung vessels, based on graph-cuts, where the appearance and shape features are combined into a newly designed cost function. To cope with memory requirements of a graph representation for voxels in chest CT, an efficient strategy was proposed by extracting sparse graphs with a low threshold and generating an adjacency matrix with diagonal vector assignments. 
+
+In\textbf{ Chapter 3} an automatic method is proposed and validated, for the quantification of pulmonary vascular morphology in CT images. The proposed method consists of pulmonary vessel extraction and quantification, where the vessel extraction method from Chapter 2 was extended, by incorporating CT intensity, vesselness and the distance map to airways, and the quantification method is based on a radius histogram analysis. The proposed method was validated with a public data set, a data set of a 3D-printed vessel phantom and a clinical data set.
+
+\textbf{Chapter 4} investigates the association between pulmonary vascular morphology and gas exchange in patients in systemic sclerosis without lung fibrosis. Pulmonary vessels were detected and quantified automatically in CT images, and subsequently two images biomarkers ($\alpha$ and $\beta$) were calculated, where $\alpha$ reflects the relative contribution of small vessels compared to large vessels and $\beta$ represents the vessel \text{tree's} capacity. The correlations between imaging biomarkers and gas transfer (DLCO) were evaluated with Spearman's correlation.
+
+\textbf{Chapter 5} presents a method for visualizing and quantifying changes in pulmonary perfusion by automatically comparing CTPA before and after BPA treatment. Fourteen CTEPH patients were involved in the study, who underwent CTPA and RHC, before and after BPA treatment. The quantification of perfusion changes was validated against hemodynamic changes.
+
+In \textbf{Chapter 6} a method is proposed for quantifying morphological changes, which consists of three processing steps: constructing vascular trees from the detected pulmonary vessels, matching vascular trees with preserving local tree topology and quantifying local morphological changes based on Poiseuille{'}s law. The vascular tree matching method was validated with a data set of synthetic trees and the relation between the quantification of morphological changes and clinical RHC parameters was investigated in CTEPH patients. 
+
+\textbf{Chapter 7} summarizes and discusses the overall achievements of this thesis.
+
+%\end{description}

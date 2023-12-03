@@ -45,7 +45,6 @@
 % Now comes the main matter
 \mainmatter
 \include{Introduction/Introduction}
-\include{chapter1/chapter1}
 \include{chapter2/chapter2}
 \include{chapter3/chapter3}
 \include{chapter4/chapter4}
@@ -54,7 +53,7 @@
 
 
 % Deactive chapter thumbs
-\ThumbIndexDeactivate  % put thumbindex.sty in the root directory
+\ThumbIndexDeactivate  % put thumbindex.sty in the root directory, it is for the edge shadow index
 
 % After the articles
 \backmatter
@@ -66,7 +65,7 @@
 %\bibliographystyle{mybibstyle}
 \titleformat{\chapter}[display]{\Huge\bfseries}{ \fontsize{46}{10} \selectfont \textcolor{gray15} \thechapter}{-15pt}{\vspace{-1cm}\raggedleft \emph \huge\bfseries  \textcolor{gray65} }
 \backmatter %this command control the display of bibliography, must be added before it.
-\include{chapterN/Bibliography}
+\include{chapterN/bibliography}
 
 
 
@@ -76,9 +75,9 @@
 \titleformat{\section}[display]{\bfseries}{}{0pt}{\textcolor{gray65}}
 
 %\include{chapterN/Appendix}  % delete for zzhai
-\include{chapterN/Publications}
+\include{chapterN/publications}
 
-\include{chapterN/Acknowledgements}
+\include{chapterN/acknowledgements}
 \include{chapterN/CV}
 \newpage
 \thispagestyle{empty}

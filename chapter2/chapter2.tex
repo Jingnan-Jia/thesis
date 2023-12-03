@@ -1,0 +1,182 @@
+\graphicspath{{chapter2/figures/}}
+\chapter{Multi-task semi-supervised learning for pulmonary lobe segmentation}
+\label{chap:2}
+
+% This is for title at the border of the page
+\runningchaptertitle{Pulmonary lobe segmentation}
+
+% This is an example to put the publication
+\publishedat{}{\textbf{Jia, J.}, Zhai, Z., Bakker, M. E., Hernández-Girón, I., Staring, M., \& Stoel, B. C. (2021, April). \textbf{Multi-task semi-supervised learning for pulmonary lobe segmentation}. In \textit{2021 IEEE 18th International Symposium on Biomedical Imaging (ISBI) }(pp. 1329-1332). IEEE.} 
+
+
+\ThumbIndexShow
+
+% --------------------------------------------------------------------------
+
+
+\begin{abstract}%200 words max
+
+% \section{Abstract} 
+Pulmonary lobe segmentation is an important preprocessing task for the analysis of lung diseases. Traditional methods relying on fissure detection or other anatomical features, such as the distribution of pulmonary vessels and airways, could provide reasonably accurate lobe segmentations. Deep learning based methods can outperform these traditional approaches, but require large datasets. Deep multi-task learning is expected to utilize labels of multiple different structures. However, commonly such labels are distributed over multiple datasets. In this paper, we proposed a multi-task semi-supervised model that can leverage information of multiple structures from unannotated datasets and datasets annotated with different structures. A focused alternating training strategy is presented to balance the different tasks. We evaluated the trained model on an external independent CT dataset. The results show that our model significantly outperforms single-task alternatives, improving the mean surface distance from 7.174 mm to 4.196 mm. We also demonstrated that our approach is successful for different network architectures as backbones. 
+\end{abstract}
+\clearpage
+
+\section{Introduction}
+Computed Tomography (CT) plays an important role in the diagnosis of lung diseases. The appearance of these diseases is, however, diverse and complex. Some lung diseases predominantly affect certain lobes \cite{park2020fully}, as each lobe has an independent airway and vascular system. Therefore, lobe segmentation is an important preprocessing step in the automated interpretation of lung CT, in order to quantify lung disease in specific regions of interest.
+
+Traditional lobe segmentation algorithms \cite{lassen2012automatic} combine information from fissures, bronchi and pulmonary vessels. Recently, deep neural networks (DNNs) improved the performance in lobe segmentation considerably \cite{gerard2018fissurenet, george2017pathological}. However, most of them require hundreds \cite{george2017pathological}or even thousands \cite{gerard2018fissurenet} of annotated CT scans, which is both laborious and time-consuming. Since the lack of large annotated datasets is a common challenge in medical imaging research, we propose to pool several smaller datasets, each with annotations of different structures, and present a strategy to leverage these multiple annotations.
+
+Different methods utilizing multiple annotations have been proposed, based on multi-task or semi-supervised learning. A multi-task models were proposed to extract multi-label information from one dataset \cite{ferreira2018end}, or to pool several different datasets of different organs for pre-training or transfer learning \cite{chen2019med3d}. Semi-supervised learning was proposed for brain MRI segmentation, where a segmentation network and a reconstruction network, sharing the same encoder, were trained with annotated data and unannotated data, respectively \cite{chen2019multi}. 
+
+In this paper, we combined multi-task and semi-supervised learning for lobe segmentation. Since the distribution of vessels can help improve lobe segmentation, auxiliary chest CT datasets with vessel annotations were added to train our model. This requires however a proper balance between the training of the different subnets.
+
+The main contributions of this paper are therefore: 1) A multi-task semi-supervised network for lobe segmentation that can utilize information from distinct datasets with annotations of different anatomical structures; and 2) A focused alternating training strategy to let the model train different tasks alternatively on different datasets, and still focus on the main task.
+
+\section{Methods}
+\subsection{Model design}
+Our network is composed of three subnets, sharing the same encoder (Figure \ref{fig:chap2_structure}): two segmentation nets for segmenting lobes and vessels (called LobeNet and VesselNet, respectively) and one reconstruction net (ReconNet). The two segmentation nets are adapted from V-Nets \cite{milletari2016v}, consisting of an encoder and decoder (see Figure \ref{fig:chap2_unet}). The only difference between the two segmentation nets is the number of output channels of the last layer. LobeNet outputs six channels, representing one background and five lobes. VesselNet has two output channels, representing background and vessels. The ReconNet architecture is similar to the segmentation nets. It omits, however, any skip connections from encoder to decoder, in order to introduce an information bottleneck. Because skip connections would allow the network to copy information from early layers and skip the dimensionality reduction in the encoder \cite{chen2019multi}.
+
+The model is fed with a pair of 3D patches at different fields of view, to provide local and global context (see Figure \ref{fig:chap2_unet}). One patch is cropped from the CT images with the original resolution, and the other is cropped from a down-sampled image with the same center as the first one.
+
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=0.6\textwidth]{structure.png}
+    \caption{Framework of proposed model. Solid lines represent convolution paths; dashed lines denote skip connections.}
+    \label{fig:chap2_structure}
+\end{figure}
+
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=0.6\textwidth]{unet.png}
+    \caption{Architecture of the segmentation subnets.}
+    \label{fig:chap2_unet}
+\end{figure}
+
+
+\subsection{Loss function and evaluation metrics}
+Because of the imbalanced labels in the lobe and vessel datasets, the two segmentation tasks were trained using weighted Dices: $loss_{seg} = 1-\sum_{i=1}^{m} \frac{Dice_i}{V_i}$, where $Dice_i$ represents the Dice of $i^{th}$ class, and $V_i$  represents the volume of $i^{th}$ class. The mean squared error (MSE) was used as the loss function to reconstruct the input images. 
+To evaluate the model performance, the mean surface distance (MSD), averaged 95th percentile Hausdorff distance (HD95) and average Dice similarity coefficient (DSC) with standard deviation (STD) were calculated by a publicly available tool \cite{jia2020package} To test the significance of the differences between two pairs of results, a Wilcoxon signed rank test was used.
+
+\subsection{Training strategies}
+Since the dataset of each subnet has its own annotation, the three subnets cannot be trained jointly. Therefore, we examined two training strategies, where different subnets are trained alternatingly with different datasets (see Figure \ref{fig:chap2_fat}). 
+
+The first training strategy is called equally alternating training (EAT), where the gradients of each subnet are updated once during each iteration. In the second training strategy, the gradients of the main subnet (LobeNet) is updated more frequently (twice in each iteration), i.e. after finishing one of the auxiliary subnets (VesselNet or ReconNet). Since this strategy focuses more on the LobeNet, we called this focused alternating training (FAT).
+
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=0.6\textwidth]{fat.png}
+    \caption{Training strategies. (a) equally alternating training; (b) focused alternating training.}
+    \label{fig:chap2_fat}
+\end{figure}
+
+\subsection{Learning rate optimization}
+Training a multi-task network is challenging, because different tasks have different loss scales and require different learning rates. Balancing different tasks is required so that they can help the main task instead of competing against it. Therefore, we introduce an adaptive learning rate to ensure the step sizes for the auxiliary tasks are always smaller than for the main task.
+
+The learning rate of LobeNet was fixed as 1e-4, whereas for VesselNet and ReconNet they were initialized at 1e-5, and subsequently updated adaptively during training: $lr=\lambda \cdot lr_{lobe} \cdot \frac{loss_{lobe}}{loss_{lobe}+loss_{aux}}$, where $loss_{aux}$ is the auxiliary loss, and $\lambda$ controls the adaptive rate. In this paper $\lambda = 0.1$ was used. 
+
+
+\section{Dataset and data augmentation}
+\subsection{Dataset}
+Four datasets were used: two separate datasets from our institution, GLUCOLD \cite{xiao2016pulmonary} and SSc \cite{zhai2019automatic}, were used for segmenting lobes and vessels, respectively; one dataset, LUNA16 \cite{setio2017validation}, for the reconstruction task; and an independent dataset, LOLA11 \cite{xiao2016pulmonary}, was used for external testing. This study was approved by the ethics committees of Leiden University Medical Center.
+
+GLUCOLD consists of 22 CT scans of COPD patients. Masks were generated by region growing and further corrected by two experienced researchers. The data was divided into three subsets for training (17), validation (1) and testing (4).
+
+SSc contains 77 cases with systemic sclerosis. A Graph-cuts method \cite{zhai2016lung} was applied to obtain initial vessel masks.  We selected 55 high quality segmentations to form the dataset for VesselNet, and divided them into training (50) and test data (5). As our main goal was to segment lobes, small errors in vessel masks were considered acceptable.
+
+LUNA16 is composed of 888 CT scans, selected from the LIDC dataset, initially intended for lung nodule analysis. By excluding all annotations, only the CT data was used for unsupervised learning in ReconNet. Please note that in principle more images could be added into the training dataset for ReconNet since it does not require annotations.
+
+LOLA11 includes 55 CT scans from various sites. It was not used for training or validation and serves as an independent performance evaluation. LOLA11 organizers annotated visible-only fissures on 9 coronal slices in each case \cite{xiao2016pulmonary}. Our expert (M.E.B) verified the annotations, and corrected them where needed. MSD was calculated based on those slices where fissures were annotated.
+
+\subsection{Data augmentation}
+Because of GPU memory limitations, it was not feasible to input the whole high-resolution 3D CT images into the model. Therefore, two 3D patches of size 144×144×96 voxels with different scales were extracted from the CT images. The images of the training dataset were augmented on-the-fly by linear transformations including random shifts (±5\%), rotations (±5\%), shearing (±5\%), and scaling (±5\%). 
+
+
+\section{Experiments and results}
+\subsection{Implementation details}
+The model was implemented using TensorFlow 1.15. The Adam optimizer was used, batch size was set to 1, and the total number of training steps for main task (LobeNet) was fixed to 100,000. Multithreading was applied to accelerate data preprocessing. The code to replicate the experiments has been released at https://github.com/Ordgod/lobeseg. Training and validation was performed on an Intel(R) Xeon(R) CPU Gold 6126 @ 2.6GHz machine with 90 GB memory. A single GPU NVIDIA GeForce RTX 2080TI with 11 GB memory was used to accelerate training.
+
+\subsection{Impact of multi-scale input \& adaptive learning rate}
+We first trained a single LobeNet with single-patch input as a baseline. Then the different techniques were applied to improve it and their effects were examined. The performance of the different techniques is shown in Table \ref{chap2_tb1}. It can be seen that compared with single-task learning, all multi-task models achieved significant improvements to varying extents. This confirms that information from other anatomical structures can improve lobe segmentation. Among these multi-task models, the model with adaptive learning rate and multi-scale input performed best.
+
+
+\begin{table}[tb]
+\centering
+\caption{Performance (DSC/MSD ± STD) of the different models in GLUCOLD. MI: Multi-scale input. AL: adaptive learning rate. ST: single-task training. MT: multi-task training with FAT. \textbf{Bold} indicates the best performance.}
+\begin{tabular}{|c|c|cc|cc|}
+\hline
+\multirow{2}{*}{\textbf{MI}} & \multirow{2}{*}{\textbf{AL}} & \multicolumn{2}{c|}{\textbf{DSC}}                                                                                     & \multicolumn{2}{c|}{\textbf{MSD(mm)}}                                                                                 \\ \cline{3-6} 
+                             &                              & \multicolumn{1}{c|}{\textbf{ST}}                                                             & \textbf{MT}            & \multicolumn{1}{c|}{\textbf{ST}}                                                             & \textbf{MT}            \\ \hline
+\multirow{2}{*}{\checkmark}           &                              & \multicolumn{1}{c|}{\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}0.952±0.022\end{tabular}}} & 0.964 ± 0.019          & \multicolumn{1}{c|}{\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}1.834±0.840\end{tabular}}} & 1.025 ± 0.480          \\ \cline{2-2} \cline{4-4} \cline{6-6} 
+                             & \checkmark                            & \multicolumn{1}{c|}{}                                                                        & 0.967 ± 0.017          & \multicolumn{1}{c|}{}                                                                        & 0.868 ± 0.369          \\ \hline
+\multirow{2}{*}{\checkmark}           &                              & \multicolumn{1}{c|}{\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}0.960±0.018\end{tabular}}} & 0.969 ± 0.015          & \multicolumn{1}{c|}{\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}1.184±0.325\end{tabular}}} & 1.003 ± 0.366          \\ \cline{2-2} \cline{4-4} \cline{6-6} 
+                             & \checkmark                            & \multicolumn{1}{c|}{}                                                                        & \textbf{0.970 ± 0.016} & \multicolumn{1}{c|}{}                                                                        & \textbf{0.765 ± 0.294} \\ \hline
+\end{tabular}
+
+\label{chap2_tb1}
+\end{table}
+
+
+
+
+
+\subsection{Impact of auxiliary tasks \& training strategies}
+Based on multi-scale input and adaptive learning rate, we progressively introduced different auxiliary tasks. The results are presented in Table \ref{chap2_tb2}. It shows that the introduction of VesselNet or ReconNet alone can improve the performance of LobeNet to varying extents. The combination of the three subnets performed better than single LobeNet but worse than LobeNet + VesselNet if the equally alternating training strategy was used. The focused alternating training achieved the best performance. Therefore, focusing to the main task was successful, while still making use of the auxiliary tasks. 
+
+\begin{table}[tb]
+    \centering
+    \caption{Performance of combinations of different tasks with multi-scale input and adaptive learning rate on GLUCOLD. VS: VesselNet. RC: ReconNet. }
+    \begin{tabular}{ccc}
+    \hline
+        \textbf{Architecture} & \textbf{DSC} & \textbf{MSD (mm) } \\ \hline
+        LobeNet & 0.960 ± 0.018 & 1.834 ± 0.325  \\ 
+        LobeNet +RC & 0.960 ± 0.027 & 1.541 ± 0.513  \\ 
+        LobeNet +VS & 0.968 ± 0.015 & 0.827 ± 0.339  \\ 
+        LobeNet +RC+VS (EAT) & 0.964 ± 0.017 & 1.032 ± 0.495  \\ 
+        LobeNet +RC+VS (FAT) & \textbf{0.970 ± 0.016} & \textbf{0.765 ± 0.294}  \\ \hline
+    \end{tabular}
+    \label{chap2_tb2}
+\end{table}
+
+\subsection{Comparison with existing networks}
+To compare our model with existing methods, we replaced LobeNet by FRV-Net \cite{ferreira2018end} and applied multi-task training strategies to it. The models were tested independently on the corrected LOLA11 (Table 3). Compared with the single-task LobeNet, our model achieved a significant (p<0.005) improvement. Furthermore, compared with FRV-Net and its multi-task version, our proposed model still achieved a competitive performance. Moreover, our proposed multi-task training strategies also worked for FRV-Net to some extent. This indicates the generalizability of our methods.
+Figure \ref{fig:chap2_3d} and Figure \ref{fig:chap2_2d} show the qualitative results of different networks. From the 3D and 2D views, it can be seen that the initial segmentation from LobeNet has significant false positive voxels outside the lungs. The segmentation from FRV-Net could not predict the oblique fissure exactly. Our model was able to precisely predict both fissures and lung surfaces. 
+
+\begin{table}[tb]
+    \centering
+    \setlength{\tabcolsep}{1.8mm}{
+    \caption{Comparison of single-task and multi-task models with LobeNet or FRV-Net as the main subnet. † denotes significantly better than the single-task model (p<0.05 in Wilcoxon signed rank test).}
+    \begin{tabular}{c|c|c|c|c|c}
+    \hline
+        \textbf{Architecture} & \textbf{MSD} & \textbf{HD95} & \textbf{Architecture} & \textbf{MSD} & \textbf{HD95} \\ \hline
+        LobeNet & \begin{tabular}[c]{@{}c@{}}7.124\\±3.432\end{tabular} & \begin{tabular}[c]{@{}c@{}}27.980\\±11.908\end{tabular} & FRV-Net & \begin{tabular}[c]{@{}c@{}}5.847\\±2.990\end{tabular} & \begin{tabular}[c]{@{}c@{}}27.944\\±15.541\end{tabular}  \\ 
+    \hline
+        \begin{tabular}[c]{@{}c@{}}LobeNet\\+RC+VS\end{tabular}& \begin{tabular}[c]{@{}c@{}}4.696†\\±2.813\end{tabular} & \begin{tabular}[c]{@{}c@{}}19.383†\\±9.904\end{tabular} & \begin{tabular}[c]{@{}c@{}}FRV-Net\\+RC+VS\end{tabular} & \begin{tabular}[c]{@{}c@{}}5.135\\±3.705\end{tabular} & \begin{tabular}[c]{@{}c@{}}22.528\\±17.269\end{tabular} \\ \hline
+    \end{tabular}
+    \label{chap2_tb2}
+    }
+\end{table}
+
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=0.6\textwidth]{3d_compare.png}
+    \caption{3D view of results from one example in LOLA11.}
+    \label{fig:chap2_3d}
+\end{figure}
+
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=0.6\textwidth]{2d_compare.png}
+    \caption{2D view of results from one example in GLUCOLD.}
+    \label{fig:chap2_2d}
+\end{figure}
+
+
+
+\section{Conclusions}
+In this paper, a multi-task semi-supervised learning model was proposed for pulmonary lobe segmentation, which can utilize unannotated datasets and annotated datasets of different anatomical structures. Multi-scale input, adaptive learning rate and focused alternating training strategy were introduced to balance different tasks. Experiments show that our multi-task semi-supervised model outperformed single-task LobeNet and FRV-Net. Considering it has been successfully implemented on LobeNet and FRV-Net, our model along with the training methods shows the potential to improve other DNN architectures as well. 
+
+
+\section*{Acknowledgement}
+We would like to thank the LOLA11 Challenge organizers for the data collection and the creation of ground-truth labels. This work is supported by the China Scholarship Council
+No.202007720110. The authors report no conflicts of interest.
+

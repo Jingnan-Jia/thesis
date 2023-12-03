@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-% Author: Vikas Gupta
+% Author: Vikas Gupta, Zhiwei, Jingnan 
 
 \makeatletter
 
@@ -10,20 +10,20 @@
 
 
 % Personal Information
-\newcommand{\yourname}{Zhiwei Zhai}
-\newcommand{\yourbirthplace}{Taian Shandong, China in 1989}
+\newcommand{\yourname}{Jingnan Jia}
+\newcommand{\yourbirthplace}{Linfen, Shanxi, China in 1993}
 
 % Defense related information
-\newcommand{\defensedate}{dinsdag, 10 maart, 2020}
+\newcommand{\defensedate}{dinsdag, 10 maart, 2024}
 \newcommand{\defensetime}{11:15 }
 \newcommand{\rector}{prof.mr. C.J.J.M. Stolker}
 
 % Thesis related information
 \newcommand{\yourisbn}{978-94-6155-067-5}
 \newcommand{\yourpublisher}{Boekendeal.nl}
-\newcommand{\yourpublishyear}{2020}
+\newcommand{\yourpublishyear}{2024}
 \newcommand{\yourascinumber}{406}
-\newcommand{\yourthesistitle}{Automatic Quantitative Analysis of Pulmonary Vessels in CT: Methods and Applications}
+\newcommand{\yourthesistitle}{Automated analysis of chest CT for systemic sclerosis using deep learning}
 
 \newcommand{\tblue}{\textcolor{blue}}
 \newcommand{\tred}{\textcolor{red}}
