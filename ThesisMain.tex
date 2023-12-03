@@ -1,0 +1,87 @@
+% !TEX TS-program = pdflatex
+
+\documentclass{ThesisClass}  % Has to put it in the root directory
+\usepackage{CJKutf8} % for Chinese characters
+%\include{ThesisFormat}
+\input{ThesisFormat}
+
+
+\definecolor{gray65}{gray}{0.45}
+\definecolor{gray10}{gray}{0.10}
+\definecolor{gray15}{gray}{0.15}
+\titleformat{\chapter}[display]
+                  {\Huge\bfseries}
+                  {\centering \fontsize{56}{10} \selectfont \textcolor{gray10} \thechapter}
+                  {25pt}{\centering \huge\bfseries \textcolor{gray65} }
+\bibliography{ThesisReferences}
+
+\linespread{1.2}  % make line space
+
+\begin{document}
+
+%\bstctlcite{IEEEexample:BSTcontrol}
+\title{\yourthesistitle}
+\author{\yourname}
+\makefirsttitle
+
+% Colophon
+\isbn{\yourisbn}
+\publisher{\yourpublisher}
+\publishedyear{\yourpublishyear}
+%% Inside cover of first page
+\makecolophon
+
+% 3rd page with promotion title
+\makesecondtitle{\tbf}{\tbf}
+\makepromotie  % ASCI logo
+
+% Show all this front matter
+\frontmatter
+
+%\include{Backmatter/dedication}
+% Show table of contents
+\tableofcontents
+
+% Now comes the main matter
+\mainmatter
+\include{Introduction/Introduction}
+\include{chapter1/chapter1}
+\include{chapter2/chapter2}
+\include{chapter3/chapter3}
+\include{chapter4/chapter4}
+\include{chapter5/chapter5}
+\include{Conclusion/Conclusion}
+
+
+% Deactive chapter thumbs
+\ThumbIndexDeactivate  % put thumbindex.sty in the root directory
+
+% After the articles
+\backmatter
+
+\include{chapterN/Samenvatting}
+
+
+% Format reference pages
+%\bibliographystyle{mybibstyle}
+\titleformat{\chapter}[display]{\Huge\bfseries}{ \fontsize{46}{10} \selectfont \textcolor{gray15} \thechapter}{-15pt}{\vspace{-1cm}\raggedleft \emph \huge\bfseries  \textcolor{gray65} }
+\backmatter %this command control the display of bibliography, must be added before it.
+\include{chapterN/Bibliography}
+
+
+
+%% Format non scientific pages
+\titleformat{\chapter}[display]{\Huge\bfseries}{ \fontsize{46}{10} \selectfont \textcolor{gray15} \thechapter}{-15pt}{\vspace{-1cm}\raggedleft \emph \huge\bfseries  \textcolor{gray65} }
+% %No more separate page for chapter
+\titleformat{\section}[display]{\bfseries}{}{0pt}{\textcolor{gray65}}
+
+%\include{chapterN/Appendix}  % delete for zzhai
+\include{chapterN/Publications}
+
+\include{chapterN/Acknowledgements}
+\include{chapterN/CV}
+\newpage
+\thispagestyle{empty}
+\mbox{}
+
+\end{document}

@@ -1,0 +1,147 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{thumbindex}[2009/12/31 Create an index to the sections or divisions of a document, consisting of a series of marks in the fore edge of the document with a labeled tab at the base of each mark.]
+
+\RequirePackage{atbegshi}
+\RequirePackage{graphics}
+\RequirePackage{calc}
+
+% use @ to avoid name clashes and use ti prefix for package macro
+\makeatletter   % make '@' as letter (catcode 11) 
+
+% copied from eso-pic
+\def\ti@lentounit#1{#1\@gobble}
+
+% create hooks, modeled after eso-pic style
+\let\ti@hook\@empty
+\def\ti@thumbinfo@hook{}
+\def\ThumbIndexLevel{chapter}
+
+% show or hide the thumbindex manually
+\newif\ifti@show\ti@showtrue
+\newcommand\ThumbIndexShow{\ti@showtrue}
+\newcommand\ThumbIndexHide{\ti@showfalse}
+
+% marker size
+\newlength{\ThumbMarkerWidth}\setlength\ThumbMarkerWidth{10mm}
+\newlength{\ThumbMarkerHeight}\setlength\ThumbMarkerHeight{10mm}
+
+% hook for creating a thumb index marker
+\let\ti@marker\@empty
+\def\ThumbIndexMarker{\let\ti@marker\@empty\relax\g@addto@macro\ti@marker}
+
+% create a square as a thumb index marker
+\def\ti@marker@emptybox{%
+	\put(\ti@lentounit{\ti@xpos},\ti@lentounit{\ti@ypos}){%
+		
+	}
+}
+
+% create a picture as a thumb index
+\let\ti@picturefile@hook\@empty%
+\def\ti@marker@picturebox{
+	\ifx\ti@picturefile@hook\@empty\ti@marker@emptybox
+	\else
+		\put(\ti@lentounit{\ti@xpos},\ti@lentounit{\ti@ypos}){%
+			\includegraphics[width=\ThumbMarkerWidth,height=\ThumbMarkerHeight]{\ti@picturefile@hook}
+		}
+	\fi
+}
+
+% interface
+\def\ThumbIndexUseEmptyBox{\ThumbIndexMarker\ti@marker@emptybox}
+\def\ThumbIndexUsePictureBox{\ThumbIndexMarker\ti@marker@picturebox}
+\def\ThumbIndexSetPictureFile{\let\ti@picturefile@hook\@empty\relax\g@addto@macro\ti@picturefile@hook}
+
+\ThumbIndexUseEmptyBox
+
+% interface to activate/deactivate the thumbindex
+\def\ThumbIndexActivate{\g@addto@macro\ti@hook}
+\def\ThumbIndexDeactivate{\let\ti@hook\@empty}
+
+% interface to set the thumb info, default is the \chaptername\ \thechapter
+\def\ThumbIndexSetInfo{\let\ti@thumbinfo@hook\@empty\relax\g@addto@macro\ti@thumbinfo@hook}
+\g@addto@macro\ti@thumbinfo@hook{%
+	\def\ti@@chaptername{\csname\ThumbIndexLevel name\endcsname}
+	\def\ti@@thechapter{\csname the\ThumbIndexLevel\endcsname}
+	\ti@@chaptername\ \ti@@thechapter
+}
+
+% a new length for vertical skip from the page upper left
+\newlength{\ThumbVSkip}
+\setlength{\ThumbVSkip}{1in}
+
+% lowering the marker every new section
+\newcount\ThumbVStep
+\ThumbVStep=1
+
+% counter for thumb indexing
+\newcount\ThumbCount%
+\ThumbCount=0
+
+% gap between the thumb index marker and the info
+\newlength{\ThumbInfoSkip}
+\setlength{\ThumbInfoSkip}{\baselineskip}
+
+% some internal lengths and counts for positioning
+\newlength\ti@xpos
+\newlength\ti@ypos
+\newcount\ti@ystep
+\newlength\ti@yoffset
+\newlength\ti@xoffset
+
+% position thumb index
+\newlength\ThumbIndexXOffset\setlength\ThumbIndexXOffset{0pt}
+\newlength\ThumbIndexYOffset\setlength\ThumbIndexYOffset{0pt}
+\def\ti@set@markerposition{%
+	\setlength\ti@xpos{\paperwidth - \ThumbMarkerWidth + \ThumbIndexXOffset}%
+	\setlength\ti@ypos{- \ThumbVSkip - \ThumbMarkerHeight + \ThumbIndexYOffset}%
+	% adjust y pos based on section
+	\ti@ystep=\thechapter \advance\ti@ystep by -1%
+	\multiply\ti@ystep by \ThumbVStep%
+	\setlength\ti@yoffset{-\ThumbMarkerHeight} \multiply\ti@yoffset by \ti@ystep%
+	\advance\ti@ypos by \ti@yoffset%
+}
+
+% position of the heading box
+\newlength\ThumbInfoXOffset\setlength\ThumbInfoXOffset{0pt}
+\def\ti@set@headingposition{%
+	\setlength\ti@xoffset{\ThumbMarkerWidth - \totalheightof{\ti@thumbinfo@hook}}%
+	\advance\ti@xpos by 0.5\ti@xoffset%
+	\advance\ti@ypos by -0.5\ThumbMarkerHeight%
+	\advance\ti@ypos by -\ThumbInfoSkip%
+	\advance\ti@xpos by \ThumbInfoXOffset%
+}
+
+% create the heading box
+\def\ti@marker@headingbox{%
+	\put(\ti@lentounit{\ti@xpos},\ti@lentounit{\ti@ypos}){%
+		\rotatebox{-90}{\mbox{\ti@thumbinfo@hook}}
+	}
+}
+
+% break macros into small pieces
+\def\ti@shippingout{\AtBeginShipoutUpperLeft{%
+	\ti@set@markerposition%
+	\ti@marker%
+	\ti@set@headingposition%
+	\ti@marker@headingbox%
+	\global\advance\ThumbCount by 1%
+}}
+\def\ti@scopetest#1{%
+	\def\ti@level@num{\csname the\ThumbIndexLevel\endcsname}%
+	\ifnum\ti@level@num>0 #1\fi
+}
+\def\ti@oddtest#1{\ifodd\count0 #1\fi}
+
+% the main macro to insert a thumb index
+\newcommand{\ti@insert}{%
+	\ifx\ti@hook\@empty
+	\else\ifti@show\ti@scopetest{\ti@oddtest\ti@shippingout}\fi\fi
+}
+
+% start shipping
+\AtBeginShipout{\ti@insert}
+\ThumbIndexActivate
+
+% restore @
+\makeatother	% make '@' back to its original code (catcode 12)

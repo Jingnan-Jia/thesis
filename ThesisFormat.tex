@@ -1,0 +1,109 @@
+%% PACKAGES
+\usepackage[cmex10]{amsmath}
+\usepackage[T1]{fontenc}
+%\usepackage{bmpsize}
+\usepackage{graphicx}
+%\usepackage{graphics}
+\usepackage{subfig,psfrag}
+\usepackage{epstopdf}
+\usepackage{siunitx}
+%\usepackage[flushleft]{threeparttable}/
+
+%  \epstopdfDeclareGraphicsRule{.pdf}{png}{.png}{convert #1 \OutputFile}
+%  \DeclareGraphicsExtensions{.png,.pdf}
+%  \epstopdfDeclareGraphicsRule{.pdf}{.eps}{eps}{convert #1 \OutputFile}
+%  \DeclareGraphicsExtensions{.eps,,.pdf}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{multicol}   %Columns
+\usepackage{multirow}
+% for bibliography
+%\usepackage[comma,numbers,sort&compress]{natbib}
+\usepackage[sorting=none,maxnames=4,minnames=3,
+bibstyle=numeric, hyperref=true,doi=false,isbn=false,
+firstinits=true,abbreviate=false,backend=bibtex8]{biblatex}
+
+\usepackage{lettrine}
+\usepackage{rotating}
+\usepackage{wallpaper}
+\usepackage{fixltx2e}
+\usepackage{stfloats}
+\usepackage{calc,soul,fourier}
+\usepackage{eso-pic}
+\usepackage{longtable}
+%\usepackage{geometry}
+\usepackage[small,compact]{titlesec}
+\usepackage{ctable}
+\usepackage{rotating}
+\usepackage{color}
+%\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}%
+%\usepackage{lipsum}
+\usepackage{arydshln} % For dashed lines
+%\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{epstopdf}
+\usepackage{charter}
+\usepackage{lscape}
+\usepackage{pdfpages}
+%\usepackage[font=sf,labelfont=bf]{caption}
+\usepackage{capt-of}
+\usepackage{microtype} % makes pdf look better
+
+\usepackage[hidelinks]{hyperref}
+%\usepackage[colorlinks=false,bookmarks,bookmarksopen=false,bookmarksdepth=2]{hyperref}% colourlinks=false for printing %
+\usepackage{bm}
+%\usepackage{cite}
+%\usepackage{psfrag}
+\usepackage{url}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{listings,array}
+\usepackage{enumitem}
+
+
+\definecolor{grayLight}{gray}{0.85}
+\renewcommand\trimmarkscolor{\color{grayLight}}
+
+\setlength{\LTcapwidth}{1.5\textwidth}
+
+% DOCUMENT FORMAT
+\addtolength{\wpYoffset}{-0.5cm}
+\addtolength{\wpXoffset}{-0.5cm}
+\def\wpScaling{1.05}
+
+
+
+\DeclareGraphicsExtensions{.eps,.ps}
+\DeclareMathOperator*{\argmax}{argmax} 
+
+
+% BIBLIOGRAPHY FORMATTING
+% -------------------------------
+\def\bibfont{\small}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\hyphenpenalty=500
+\fixpdflayout
+
+
+
+\newcommand{\blankpage}{
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
+}
+
+% Setting page size
+\trimXmarks \setstocksize{246mm}{176mm} \settrimmedsize{240mm}{170mm}{*}
+\settrims{3mm}{3mm}
+
+%\setlrmargins{*}{20mm}*1}
+
+\setlrmarginsandblock{20mm}{20mm}{*}
+%\setlrmarginsandblock{22mm}{20mm}{*}
+%\setlrmarginsandblock{20mm}{15mm}{*}
+%\setlength{\evensidemargin}{\oddsidemargin}
+\setulmarginsandblock{22mm}{22mm}{*} %\ProcessOptions\relax
+\checkandfixthelayout
