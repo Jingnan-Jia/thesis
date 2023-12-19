@@ -157,7 +157,7 @@ First, the correlation between different PFTs and PFTs\%pred are shown in Figure
 
 
 
-\subsection{Transfer learning (tl) versus trained from scratch (q2)}
+\subsection{Transfer learning (tl) versus trained from scratch (Q2)}
  
 The performance of the network based on TL was compared with the network trained from scratch, see Table \ref{chap4_table:table_TL}. It is shown that the R and ICC values increased and MAE values decreased after the introduction of TL. The standard deviation also decreased, which means that the networks with TL were more stable than those trained from scratch. This finding was verified by the scatter plots of the two networks (Figure \ref{fig:chap4_scatter}), where the regression lines of the network with TL were closer to the identity line than the networks without TL. Figure \ref{fig:chap4_ba} shows the Bland-Altman plots of networks without or with TL. The plots display the differences between the automatically estimated PFTs and measured PFTs against their mean. From Figure \ref{fig:chap4_scatter} and \ref{fig:chap4_ba}, we can observe that the network trained from scratch tended to give conservative estimations: close to the mean value of measurements.
 
@@ -216,7 +216,7 @@ Therefore, the images with lower PFTs were overestimated and higher PFTs were un
 \end{figure}
 
 
-\subsection{Estimation of PFTs\%pred: direct versus indirect (q3)}
+\subsection{Estimation of PFTs\%pred: direct versus indirect (Q3)}
 
 Table \ref{chap4_table:PFTpp} shows the performance of estimating PFTs\%pred for the two methods. The indirect estimation achieved ICC values of 0.60, 0.60, 0.69 and 0.75 for DLCO\%pred, FEV\textsubscript{1}\%pred, FVC\%pred and TLC\%pred, respectively. These ICC values were higher than those of the direct method (ICC=0.30, 0.47, 0.50 and 0.53). The indirect method also achieved higher R and lower MAE values. Therefore, all the following networks were trained to estimate the absolute PFTs first. 
 
@@ -252,7 +252,7 @@ Method  & Metrics & DLCOc\%     & FEV\textsubscript{1}\%      & FVC\%       & TL
 
 Table 2 shows that the ICC values of the 4-class network (ICC=0.71, 0.76, 0.80, and 0.81) were similar to the ICC values of tsshe four 1-class networks (ICC=0.70, 0.76, 0.76, and 0.84). The R and MAE values for the two network designs were also similar. \textit{p}-values of 0.60, 0.13, 0.18 and 0.61 indicate that the results of the four networks with 1-class output did not show a significantly difference compared to the 4-class network. Because the 4-class network can output four PFTs at a same time, which saves training \& inference time and GPU memory, all the following networks were trained with a 4-class output.
 
-\subsection{Contribution of the different chest regions (q5)}
+\subsection{Contribution of the different chest regions (Q5)}
 The PFT estimation performance of our proposed networks are summarized in Figure \ref{fig:chap4_bar} and Table \ref{chap4_table_all_compare}. DLCO was always the most difficult parameter to estimate, followed by FEV\textsubscript{1} and then FVC and TLC. The network trained on the whole CT volume achieved the best performance (highest ICC and R, as well as lowest MAE values). The network trained on both lungs performed slightly worse. The performances for the left and right lung were similar, which implies similar contribution of left and right lung to the PFT estimation. The network trained on pulmonary vessels performed worse than the previous networks for FEV\textsubscript{1}, FVC and TLC estimation, but better for DLCO estimation. The network trained on binarized vessels (1 as foreground and 0 as background) achieved similar ICC and MAE values and slightly higher R values, as compared to the network trained on gray scale vessels. The networks trained on gray scale vessels performed the worst compared to the other networks, but still better than the manually designed vessel based biomarkers $\alpha$ (R=-0.29) and $\beta$ (R=0.32).
 
 \begin{figure}[tb]
@@ -307,7 +307,7 @@ If we look at the RAMs generated from the network trained on whole CT, for some 
 \end{figure}
 
 
-\subsection{Comparison standard repeatability criteria (q6)}
+\subsection{Comparison standard repeatability criteria (Q6)}
 After comparing our method to previous works, putting the results of our network into clinical perspective is still needed. Estimating PFTs from CT scans by human experts is impractical for obvious reasons, therefore we could not compare our method with human observations. However, we could compare our results with the theoretically best obtainable result, as determined by the officially recommended repeatability criteria for spirometric measurements. The PFT measures are normally obtained by means of three repetitions of the measurements \cite{Sylvester2020}. According to the most recent official standard on pulmonary function testing \cite{Sylvester2020}, the repeatability for DLCO and TLC obtained by the helium dilution technique between technically acceptable measurements should be within 10\% of the average value. The repeatability criterion for FEV1 and FVC is that differences should be lower than 0.15 L \cite{Sylvester2020}. To have a fair comparison between different PFTs, the acceptable errors of 0.15 L for FEV1 and FVC were divided by the mean measured values in Table \ref{chap4_table: dataset}, obtaining a percentage error of 6\% ($RE_{FEV_1} = 0.15/\bar{y}_{FEV_1} = 0.15/2.62 \approx 6\%$) and 5\% ($RE_{FVC} = 0.15/\bar{y}_{FVC} = 0.15/3.32 \approx 5\%$). As shown in Table \ref{chap4_table_compare_repeatibility}, the repeatability criteria is 10\%, 6\%, 5\% and 10\% for DLCO, FEV\textsubscript{1}, FVC and TLC, respectively. 
 
 \begin{table}[h]
@@ -326,7 +326,7 @@ Our model          & 20 ± 18    & 19 ± 14   & 15 ± 12  & 13 ± 11  \\
 
 
 
-\subsection{Multiple variable regression analysis (q7)}
+\subsection{Multiple variable regression analysis (Q7)}
 A multivariable regression analysis was performed to evaluate if manual biomarkers could still contribute to the estimation of PFTs, in addition to the estimation of our method. Multivariable stepwise linear regression was performed with DLCO as the dependent variable and the network-estimated DLCO (NetDLCO), Perc85, $\alpha$, $\beta$, $V\textsubscript{lung}$, and $V\textsubscript{vessel}$ as independent variables. We performed similar analyses for FEV\textsubscript{1}, FVC and TLC (Table \ref{chap4_table_multiple_variable}). The multivariable stepwise regression analysis showed that the inclusion of $V\textsubscript{lung}$ and $\beta$ could significantly improve the regression coefficient of DLCO (from R =0.75 to R =0.81). Similarly, by including $V\textsubscript{lung}$ and Perc85, the estimation of FEV\textsubscript{1}, FVC and TLC could also be significantly improved. Therefore, although we have developed automatic networks that outperformed manually designed biomarkers as single predictors, these manual biomarkers could still contribute further to the estimation of PFTs.
 
 \begin{table}[]
