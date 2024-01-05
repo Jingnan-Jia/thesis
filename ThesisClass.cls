@@ -230,6 +230,16 @@ Library of Leiden University, \\ Lung Foundation Netherlands.
 
 \def\publishedat#1{\vfill \noindent \textit{This chapter was adapted from:} \\ \\* \def\@chapterpub{\par\noindent #1}}
 
+
+\def\outlinefigure#1{
+% \vfill % 在图片之前填充空白
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{#1} 
+\end{center}
+% \vfill % 在图片之前填充空白
+}
+
+
 \def\notpublishedat#1{\def\@chapterpub{#1}}
 
 \newcommand\makechapterpublications{%
@@ -278,6 +288,7 @@ Library of Leiden University, \\ Lung Foundation Netherlands.
    \renewcommand\printchaptertitle[1]{\chaptitlefont\raggedright ##1\par}
     \renewcommand\afterchaptertitle{\par\vskip\midchapskip\thispagestyle{empty}}
 }
+
 
 % Extra chapter style
 \let\@orig@chapter=\chapter%
